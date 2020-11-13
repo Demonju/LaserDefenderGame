@@ -10,16 +10,21 @@ public class Player : MonoBehaviour
     [SerializeField] float movementSpeed = 10f;
     [SerializeField] GameObject laserPrefab;
     [SerializeField] float laserSpeed = 15f;
+    [SerializeField] float laserFiringTime = 0.2f;
+
+    Coroutine firingCoroutine;
 
     float xMin, xMax, yMin, yMax;
 
     float padding = 0.5f;
 
+    bool coroutineStarted = false;
+
     // Start is called before the first frame update
     void Start()
     {
         SetUpMoveBoundaries();
-        StartCoroutine(PrintAndWait());
+        //StartCoroutine(PrintAndWait());
     }
 
     // Update is called once per frame
@@ -29,14 +34,29 @@ public class Player : MonoBehaviour
         Fire();
     }
 
-    //coroutine example
-    private IEnumerator PrintAndWait()
+    private IEnumerator FireContinuously()
     {
-        print("Bonswa");
-        //wait 10 seconds
-        yield return new WaitForSeconds(10);
-        print("Ara ostra ghadek ma mietx :O");
+        while(true) //while coroutine is running
+        {
+            //create an instant of laserPrefab at the position of the Player ship
+            GameObject laser = Instantiate(laserPrefab, transform.position, Quaternion.identity) as GameObject;
+            //add a velocity to the alser in the y-axis
+            laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, laserSpeed);
+            //wait x amount of seconds
+            yield return new WaitForSeconds(laserFiringTime);
+        }
     }
+
+    ////coroutine example
+    //private IEnumerator PrintAndWait()
+    //{
+    //    print("Bonswa");
+    //    //wait 10 seconds
+    //    yield return new WaitForSeconds(10);
+    //    print("Ara ostra ghadek ma mietx :O");
+    //    yield return new WaitForSeconds(10);
+    //    print("O M G");
+    //}
 
     //sets up the boundaries according to the camera
     private void SetUpMoveBoundaries()
@@ -50,15 +70,25 @@ public class Player : MonoBehaviour
         yMax = gameCamera.ViewportToWorldPoint(new Vector3(0, 0.5f, 0)).y - padding;
     }
 
+    //if coroutine is started, do not start another 1
+
     private void Fire()
     {
-        //if fire button is pressed, create and fire a laser
-        if(Input.GetButtonDown("Fire1"))
+        if (!coroutineStarted) //if coroutineStarted == false
         {
-            //create an instant of laserPrefab at the position of the Player ship
-            GameObject laser = Instantiate(laserPrefab, transform.position, Quaternion.identity) as GameObject;
-            //add a velocity to the alser in the y-axis
-            laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, laserSpeed);
+            //if fire button is pressed, start coroutine to fire
+            if (Input.GetButtonDown("Fire1"))
+            {
+                firingCoroutine = StartCoroutine(FireContinuously());
+                coroutineStarted = true;
+            }
+        }
+        
+        //if fire button is released, Stop Coroutine
+        if(Input.GetButtonUp("Fire1"))
+        {
+            StopCoroutine(firingCoroutine);
+            coroutineStarted = false;
         }
     }
 
