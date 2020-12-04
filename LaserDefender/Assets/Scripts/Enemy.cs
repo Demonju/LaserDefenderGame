@@ -32,6 +32,8 @@ public class Enemy : MonoBehaviour
     private void ProcessHit(DamageDealer dmgDealer)
     {
         health -= dmgDealer.GetDamage();
+        //destroy player laser
+        dmgDealer.Hit();
 
         if (health <= 0)
         {

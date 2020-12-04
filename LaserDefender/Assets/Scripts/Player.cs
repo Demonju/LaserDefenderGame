@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject laserPrefab;
     [SerializeField] float laserSpeed = 15f;
     [SerializeField] float laserFiringTime = 0.2f;
+    [SerializeField] float health = 200f;
 
     Coroutine firingCoroutine;
 
@@ -112,5 +113,29 @@ public class Player : MonoBehaviour
 
         //move the Player ship to the newXPos
         this.transform.position = new Vector2(newXPos, newYPos);
+    }
+
+    //reduces health whenever the enemy collides with a gameObject
+    //which has a DamageDealer component
+    private void OnTriggerEnter2D(Collider2D otherObject)
+    {
+        //access the DamageDealer class from "otherObject" which hits enemy
+        //and reduces health accordingly
+        DamageDealer dmgDealer = otherObject.gameObject.GetComponent<DamageDealer>();
+
+        ProcessHit(dmgDealer);
+    }
+
+    //Whenever ProcessHit() is called, send us the DamageDealer details
+    private void ProcessHit(DamageDealer dmgDealer)
+    {
+        health -= dmgDealer.GetDamage();
+        //destroy enemy laser
+        dmgDealer.Hit();
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }
