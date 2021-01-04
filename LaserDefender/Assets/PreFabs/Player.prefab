@@ -101,6 +101,10 @@ MonoBehaviour:
   laserSpeed: 15
   laserFiringTime: 0.2
   health: 300
+  playerDeathSound: {fileID: 8300000, guid: fdc71fcd843f0d047ac5760ec4d62209, type: 3}
+  playerDeathSoundVolume: 0.703
+  playerShootSound: {fileID: 8300000, guid: 8c9d95c0c78d6404080585613c1a51ca, type: 3}
+  playerShootSoundVolume: 0.06
 --- !u!60 &2754785132763405013
 PolygonCollider2D:
   m_ObjectHideFlags: 0
